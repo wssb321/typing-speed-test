@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#1a73e8" />
+<meta name="description" content="勤工俭学选拔打字速度与准确率测试" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23087f6d'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-size='34' fill='white'%3E勤%3C/text%3E%3C/svg%3E" />
+<title>勤工俭学打字测试</title>
+<style>
+  /* ===================== 基础样式 ===================== */
+  :root {
+    --primary: #1a73e8;
+    --primary-dark: #1558b0;
+    --primary-light: #eaf2fe;
+    --green: #12a05c;
+    --danger: #dc2626;
+    --warn: #d97706;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #dbe6f5;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    padding: 24px 16px 40px;
+    min-height: 100vh;
+    font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
+    color: var(--text);
+    background: linear-gradient(160deg, #eef4fc 0%, #e7f0fb 45%, #eaf7f2 100%);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .page { width: 100%; max-width: 880px; display: none; }
+  .page.active { display: block; }
+
+  h1, h2, h3, p, ul { margin: 0; }
+
+  /* ===================== 按钮 ===================== */
+  .btn {
+    border: 0;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 13px 28px;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease, opacity .15s ease;
+  }
+  .btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; }
+  .btn-primary {
+    color: #fff;
+    background: linear-gradient(135deg, #1a73e8, #2e8bfa);
+    box-shadow: 0 6px 16px rgba(26, 115, 232, .28);
+  }
+  .btn-primary:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(26, 115, 232, .32); }
+  .btn-ghost {
+    color: #3c4a5d;
+    background: #eef3fb;
+    border: 1px solid #e0e9f6;
+  }
+  .btn-ghost:not(:disabled):hover { background: #e4ecf9; }
+  .btn-block { width: 100%; margin-top: 6px; }
+
+  /* ===================== 登录页 ===================== */
+  .login-card {
+    max-width: 520px;
+    margin: 4vh auto 0;
+    padding: 34px 32px 30px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 18px 50px rgba(22, 60, 110, .12);
+  }
+
+  .brand { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+  .logo {
+    width: 48px; height: 48px;
+    flex: 0 0 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 700; color: #fff;
+    background: linear-gradient(135deg, #1a73e8, #2fb3a0);
+    box-shadow: 0 8px 18px rgba(26, 115, 232, .28);
+  }
+  .brand h1 { font-size: 24px; letter-spacing: .5px; }
+  .brand .sub { margin-top: 4px; font-size: 12px; color: #9aa7b8; letter-spacing: 1.5px; text-transform: uppercase; }
+
+  .field label { display: block; font-size: 14px; font-weight: 600; color: #445065; margin-bottom: 8px; }
+  .field input {
+    width: 100%;
+    padding: 13px 14px;
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--text);
+    background: #fbfdff;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .field input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26, 115, 232, .12); }
+  .error { min-height: 20px; margin-top: 6px; font-size: 13px; color: var(--danger); }
+
+  .notice {
+    margin-top: 22px;
+    padding: 16px 18px;
+    background: #f6f9fe;
+    border: 1px solid #e6eefa;
+    border-radius: 12px;
+  }
+  .notice h3 { font-size: 14px; color: #2b3a4d; margin-bottom: 10px; }
+  .notice ul { padding-left: 18px; }
+  .notice li { font-size: 13px; line-height: 2; color: #5d6b7e; }
+  .notice b { color: var(--warn); }
+
+  /* ===================== 测试页 ===================== */
+  .test-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+    color: #45536a;
+    font-size: 14px;
+    flex-wrap: wrap;
+  }
+  .head-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .badge {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    background: var(--primary-light);
+  }
+  .examinee b { color: var(--primary-dark); }
+  .switch-info { font-size: 12px; color: #8b98aa; }
+  .switch-info b { color: var(--warn); }
+
+  .card {
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #e8eef7;
+    border-radius: 16px;
+    box-shadow: 0 14px 40px rgba(22, 60, 110, .1);
+  }
+
+  .card-title { margin-bottom: 12px; font-size: 14px; font-weight: 600; color: #465369; }
+
+  /* 测试原文：禁用文本选择，防止拖拽/选中后复制 */
+  .target-text {
+    padding: 16px 18px;
+    font-size: 19px;
+    line-height: 1.95;
+    letter-spacing: .5px;
+    color: #22303f;
+    background: #f6f9fe;
+    border: 1px solid #e2ebf7;
+    border-radius: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    cursor: default;
+  }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 12px; }
+  .stat {
+    flex: 1 1 100px;
+    padding: 9px 10px;
+    text-align: center;
+    background: #f4f8fe;
+    border: 1px solid #e5edf9;
+    border-radius: 10px;
+  }
+  .stat .label { font-size: 12px; color: #7d8a9c; }
+  .stat .value {
+    margin-top: 2px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 输入框：额外禁用粘贴/复制/剪切与文本选择 */
+  #inputArea {
+    width: 100%;
+    min-height: 128px;
+    padding: 14px 16px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 18px;
+    line-height: 1.9;
+    color: var(--text);
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  #inputArea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26, 115, 232, .12); }
+  #inputArea:disabled { background: #f7f9fc; color: #9aa6b5; }
+
+  .actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px; }
+
+  /* ===================== 结果页 ===================== */
+  .result-card {
+    padding: 24px 22px 22px;
+    background: #fff;
+    border: 1px solid #e8eef7;
+    border-radius: 16px;
+    box-shadow: 0 14px 40px rgba(22, 60, 110, .1);
+  }
+  .result-summary { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+  .summary-label { font-size: 13px; color: var(--muted); }
+  .summary-score { font-size: 44px; font-weight: 800; line-height: 1.15; color: var(--primary-dark); }
+  .summary-score small { font-size: 16px; font-weight: 600; margin-left: 4px; }
+
+  .rating {
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .r-excellent { color: #0b7a4b; background: #e5f8ee; }
+  .r-good { color: #1558b0; background: #e8f1fe; }
+  .r-pass { color: #a15c07; background: #fef3e2; }
+  .r-fail { color: #b91c1c; background: #fee8e8; }
+
+  .summary-meta { margin-top: 6px; font-size: 13px; color: var(--muted); }
+  .abnormal-tip {
+    margin-top: 10px;
+    padding: 9px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #b91c1c;
+    background: #feecec;
+    border: 1px solid #f8d4d4;
+    border-radius: 8px;
+  }
+
+  .canvas-wrap { margin-top: 18px; }
+  #resultCanvas {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(22, 60, 110, .16);
+  }
+  .result-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+
+  /* ===================== 提示 / 遮罩 ===================== */
+  .toast {
+    position: fixed;
+    left: 50%;
+    top: 22px;
+    z-index: 300;
+    max-width: 90vw;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    border-radius: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -16px);
+    transition: opacity .22s ease, transform .22s ease;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast.warn { background: var(--warn); box-shadow: 0 8px 24px rgba(217, 119, 6, .35); }
+  .toast.danger { background: var(--danger); box-shadow: 0 8px 24px rgba(220, 38, 38, .35); }
+  .toast.info { background: var(--primary); box-shadow: 0 8px 24px rgba(26, 115, 232, .32); }
+
+  .dev-banner {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 250;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    background: var(--danger);
+    transform: translateY(-110%);
+    transition: transform .25s ease;
+  }
+  .dev-banner.show { transform: translateY(0); }
+
+  .mask {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 34, 58, .55);
+  }
+  .mask.active { display: flex; }
+  .mask-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 28px 24px;
+    text-align: center;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .28);
+  }
+  .mask-icon {
+    width: 48px; height: 48px;
+    margin: 0 auto 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 800; color: #fff;
+    background: var(--warn);
+    border-radius: 50%;
+  }
+  .mask-card h3 { font-size: 18px; color: #22303f; }
+  .mask-card p { margin: 10px 0 20px; font-size: 13px; line-height: 1.8; color: var(--muted); }
+  .mask-card p b { color: var(--danger); }
+
+  /* ===================== 移动端适配 ===================== */
+  @media (max-width: 600px) {
+    body { padding: 14px 12px 30px; }
+    .login-card { margin-top: 2vh; padding: 26px 20px 22px; }
+    .brand h1 { font-size: 21px; }
+    .target-text { font-size: 17px; line-height: 1.9; padding: 14px; }
+    .stat .value { font-size: 18px; }
+    .btn { padding: 12px 20px; font-size: 15px; }
+    .actions { flex-direction: column-reverse; }
+    .actions .btn { width: 100%; }
+    .summary-score { font-size: 36px; }
+  }
+
+  /* ===================== 优化后的考务视觉与响应式层级 ===================== */
+  body {
+    position: relative;
+    padding: 32px 18px 56px;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(55, 136, 255, .12), transparent 28%),
+      radial-gradient(circle at 92% 92%, rgba(29, 175, 149, .10), transparent 30%),
+      #f3f7fc;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .24;
+    background-image: linear-gradient(rgba(22, 71, 126, .05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(22, 71, 126, .05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: linear-gradient(to bottom, #000, transparent 72%);
+  }
+  .app { position: relative; z-index: 1; width: 100%; }
+  .login-card { max-width: 600px; margin-top: 3vh; padding: 0; overflow: hidden; border: 1px solid rgba(195, 211, 231, .85); }
+  .login-top { padding: 34px 36px 24px; border-bottom: 1px solid #e8eef6; }
+  .login-body { padding: 28px 36px 34px; }
+  .brand { margin-bottom: 0; }
+  .brand-copy { flex: 1; }
+  .brand h1 { font-size: clamp(23px, 4vw, 30px); letter-spacing: -.4px; }
+  .brand .sub { margin-top: 7px; text-transform: none; letter-spacing: .2px; font-size: 13px; color: #718096; }
+  .secure-note { display: flex; gap: 9px; align-items: center; margin-top: 18px; color: #58708d; font-size: 13px; }
+  .secure-dot { width: 8px; height: 8px; border-radius: 50%; background: #16a276; box-shadow: 0 0 0 5px rgba(22,162,118,.12); }
+  .notice { background: #f8fafc; border-radius: 10px; }
+  .notice li { line-height: 1.8; margin: 4px 0; }
+  .field input { min-height: 50px; }
+  .btn { min-height: 46px; border-radius: 9px; }
+  .btn-primary { background: #1769d2; box-shadow: 0 7px 18px rgba(23, 105, 210, .22); }
+  .btn-primary:not(:disabled):hover { background: #125bb8; }
+  .btn:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid rgba(23, 105, 210, .24); outline-offset: 2px; }
+
+  .exam-shell { max-width: 1040px; margin: 0 auto; }
+  .test-head { margin: 0 0 14px; padding: 0 2px; }
+  .test-head .badge { border-radius: 6px; letter-spacing: .4px; }
+  .status-dot { display: inline-block; width: 8px; height: 8px; margin-right: 7px; border-radius: 50%; background: #a0aec0; }
+  .status-dot.running { background: #16a276; box-shadow: 0 0 0 5px rgba(22,162,118,.12); }
+  .card { padding: 0; overflow: hidden; border-radius: 14px; border-color: #dbe5f1; box-shadow: 0 18px 45px rgba(30, 66, 111, .09); }
+  .exam-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) 170px; align-items: stretch; border-bottom: 1px solid #e6edf6; }
+  .exam-instruction { padding: 22px 24px; }
+  .exam-instruction h2 { font-size: 18px; color: #1e3047; }
+  .exam-instruction p { margin-top: 7px; color: #718096; font-size: 13px; line-height: 1.6; }
+  .timer-panel { display: grid; place-content: center; text-align: center; color: #fff; background: #153f73; }
+  .timer-panel .timer-label { font-size: 12px; opacity: .76; letter-spacing: 1px; }
+  .timer-panel .timer-value { margin-top: 4px; font-size: 36px; font-weight: 750; line-height: 1; font-variant-numeric: tabular-nums; }
+  .timer-panel .timer-unit { margin-left: 3px; font-size: 13px; opacity: .78; }
+  .exam-body { padding: 24px; }
+  .target-label { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; font-size: 13px; color: #607086; }
+  .target-text { padding: 20px 22px; line-height: 2.05; color: #172b43; background: #f5f8fc; border-color: #dfe8f3; }
+  .progress-track { height: 4px; margin: 15px 0 0; overflow: hidden; background: #e8eef6; border-radius: 4px; }
+  .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, #1769d2, #18a484); transition: width .18s ease; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin: 18px 0; border: 1px solid #e2eaf4; border-radius: 10px; overflow: hidden; }
+  .stat { padding: 12px 8px; border: 0; border-right: 1px solid #e2eaf4; border-radius: 0; background: #fff; }
+  .stat:last-child { border-right: 0; }
+  .stat .value { color: #173f70; font-size: 22px; }
+  .typing-label { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 9px; color: #334b68; font-size: 13px; font-weight: 650; }
+  .typing-label span { color: #8896a8; font-size: 12px; font-weight: 400; }
+  #inputArea { min-height: 160px; resize: none; background: #fbfdff; }
+  .actions { align-items: center; justify-content: space-between; }
+  .action-note { max-width: 510px; color: #7b899b; font-size: 12px; line-height: 1.55; }
+  .action-buttons { display: flex; gap: 10px; }
+
+  .result-card { max-width: 760px; margin: 2vh auto 0; padding: 28px; }
+  .result-summary { justify-content: center; padding-bottom: 20px; text-align: center; border-bottom: 1px solid #e8eef5; }
+  .canvas-wrap { padding: 20px; background: #f4f7fb; border-radius: 12px; }
+
+  @media (max-width: 680px) {
+    body { padding: 14px 10px 32px; }
+    .login-top, .login-body { padding-left: 22px; padding-right: 22px; }
+    .logo { width: 44px; height: 44px; flex-basis: 44px; }
+    .exam-toolbar { grid-template-columns: 1fr; }
+    .timer-panel { grid-template-columns: auto auto; gap: 6px; align-items: baseline; padding: 14px 20px; }
+    .timer-panel .timer-value { font-size: 30px; }
+    .exam-body { padding: 17px 15px 18px; }
+    .target-text { padding: 15px; font-size: 17px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .stat:nth-child(2) { border-right: 0; }
+    .stat:nth-child(-n+2) { border-bottom: 1px solid #e2eaf4; }
+    #inputArea { min-height: 145px; font-size: 17px; }
+    .actions { align-items: stretch; }
+    .action-note { display: none; }
+    .action-buttons { width: 100%; }
+    .action-buttons .btn { flex: 1; }
+    .result-card { padding: 22px 16px; }
+    .canvas-wrap { padding: 10px; }
+  }
+
+  /* ===================== V2：深青考务台视觉 ===================== */
+  :root { --primary: #087f6d; --primary-dark: #075f55; --primary-light: #e5f5f1; }
+  #loginPage.active {
+    display: grid;
+    min-height: calc(100vh - 88px);
+    max-width: none;
+    margin: 0 auto;
+    place-items: center;
+  }
+  #resultPage.active {
+    display: grid;
+    min-height: calc(100vh - 88px);
+    max-width: none;
+    margin: 0 auto;
+    place-items: center;
+  }
+  body {
+    background:
+      radial-gradient(circle at 12% 8%, rgba(9, 128, 109, .12), transparent 30%),
+      linear-gradient(145deg, #edf5f2 0%, #f6f8f5 50%, #eef2f7 100%);
+  }
+  body::before { background-size: 56px 56px; opacity: .16; }
+  .login-card { display: grid; grid-template-columns: .86fr 1.14fr; width: min(880px, 100%); max-width: 880px; min-height: 560px; margin: 0; }
+  .login-top { display: flex; flex-direction: column; justify-content: space-between; padding: 46px 38px; color: #fff; background: #073f3a; border: 0; }
+  .login-top::after { content: "01  ·  身份确认\A 02  ·  中文录入\A 03  ·  生成成绩"; white-space: pre; font-size: 13px; line-height: 2.35; letter-spacing: 1px; color: rgba(255,255,255,.6); }
+  .login-body { display: flex; flex-direction: column; justify-content: center; padding: 46px; }
+  .logo { background: #f4c86a; color: #143d37; box-shadow: none; }
+  .login-top .brand { flex-direction: column; align-items: flex-start; }
+  .brand h1 { color: #fff; line-height: 1.25; }
+  .brand .sub { color: rgba(255,255,255,.64); line-height: 1.7; }
+  .secure-note { color: #a9d4ca; }
+  .secure-dot { background: #f4c86a; box-shadow: 0 0 0 5px rgba(244,200,106,.14); }
+  .btn-primary { background: #087f6d; box-shadow: 0 7px 18px rgba(8,127,109,.2); }
+  .btn-primary:not(:disabled):hover { background: #066b5c; }
+  .field input:focus, #inputArea:focus { border-color: #087f6d; box-shadow: 0 0 0 3px rgba(8,127,109,.12); }
+  .notice { padding: 15px 17px; background: #f5f8f6; border-color: #e1ebe7; }
+  .notice h3 { color: #143d37; }
+  .notice li { line-height: 1.65; }
+  .test-head .badge { color: #075f55; background: #dff2ed; }
+  .timer-panel { background: #073f3a; }
+  .progress-bar { background: linear-gradient(90deg, #087f6d, #35a98f); }
+  .stat .value { color: #075f55; }
+  .result-card { width: min(760px, 100%); margin: 0; border-top: 5px solid #087f6d; }
+  .summary-score { color: #075f55; }
+  @media (max-width: 680px) {
+    .login-card { display: block; min-height: 0; }
+    .login-top { min-height: 220px; padding: 28px 22px 24px; }
+    .login-top::after { margin-top: 26px; line-height: 1.85; }
+    .login-body { padding: 28px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 全局提示 -->
+<div id="toast" class="toast"></div>
+<div id="devBanner" class="dev-banner">请关闭开发者工具，否则本次成绩可能被判定无效</div>
+
+<main class="app">
+
+  <!-- ============================ 1. 登录 / 开始页 ============================ -->
+  <section id="loginPage" class="page active">
+    <div class="login-card">
+      <div class="login-top">
+      <div class="brand">
+        <div class="logo">勤</div>
+        <div class="brand-copy">
+          <h1>勤工俭学打字测试</h1>
+          <p class="sub">勤工俭学岗位选拔 · 中文录入能力测试</p>
+        </div>
+      </div>
+      <div class="secure-note"><span class="secure-dot"></span>本场测试将记录切屏与异常操作</div>
+      </div>
+
+      <div class="login-body">
+      <div class="field">
+        <label for="nameInput">请输入姓名</label>
+        <input id="nameInput" type="text" maxlength="10" placeholder="2-10 个字符" autocomplete="off" />
+        <p id="errorMsg" class="error"></p>
+      </div>
+
+      <button id="btnEnter" class="btn btn-primary btn-block">开始测试</button>
+
+      <div class="notice">
+        <h3>考试须知</h3>
+        <ul>
+          <li>测试过程中<b>禁止复制、粘贴、剪切</b>，相关快捷键与右键菜单均已禁用。</li>
+          <li>测试过程中<b>禁止切换窗口／切屏</b>；切屏会自动暂停计时，超过 2 次将自动提交并标记异常。</li>
+          <li>禁止打开开发者工具，检测到相关操作会给出警告。</li>
+          <li>本题内容简短，正常情况下可在 <b>1 分钟内</b> 完成；完成后提交生成结果卡片。</li>
+        </ul>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ 2. 测试主界面 ============================ -->
+  <section id="testPage" class="page exam-shell">
+    <div class="test-head">
+      <div class="head-left">
+        <span class="badge">打字测试</span>
+        <span class="examinee">考生：<b id="examineeName">—</b></span>
+      </div>
+      <span class="switch-info"><span id="statusDot" class="status-dot"></span><span id="statusText">等待开始</span> · 切屏 <b id="switchCount">0</b>/2</span>
+    </div>
+
+    <div class="card">
+      <div class="exam-toolbar">
+        <div class="exam-instruction">
+          <h2>一分钟中文录入</h2>
+          <p>请完整、准确地输入指定内容，标点符号也需保持一致。</p>
+        </div>
+        <div class="timer-panel" aria-live="polite">
+          <span class="timer-label">测试用时</span>
+          <span><span class="timer-value" id="timer">0.0</span><span class="timer-unit">秒</span></span>
+        </div>
+      </div>
+
+      <div class="exam-body">
+      <div class="target-label"><span>测试原文</span><span id="targetLength">共 0 字</span></div>
+      <div id="targetText" class="target-text"></div>
+      <div class="progress-track" aria-hidden="true"><div id="progressBar" class="progress-bar"></div></div>
+
+      <div class="stats">
+        <div class="stat"><div class="label">已打字数</div><div class="value" id="typedCount">0</div></div>
+        <div class="stat"><div class="label">正确字数</div><div class="value" id="correctCount">0</div></div>
+        <div class="stat"><div class="label">当前准确率</div><div class="value"><span id="liveAccuracy">0.0</span><small>%</small></div></div>
+        <div class="stat"><div class="label">切屏次数</div><div class="value"><span id="inlineSwitchCount">0</span><small>/2</small></div></div>
+      </div>
+
+      <label class="typing-label" for="inputArea">录入区域 <span>内容只保存在当前浏览器中</span></label>
+      <!-- 输入框：内联事件再次禁用粘贴/复制/剪切/右键 -->
+      <textarea id="inputArea" disabled
+        onpaste="return false" oncopy="return false" oncut="return false" oncontextmenu="return false"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+        placeholder="点击“开始测试”后在此输入……"></textarea>
+
+      <div class="actions">
+        <p class="action-note">开始后请保持当前页面可见。切屏将暂停计时，第 3 次切屏会自动提交并标记异常。</p>
+        <div class="action-buttons">
+          <button id="btnStart" class="btn btn-primary">开始测试</button>
+          <button id="btnSubmit" class="btn btn-ghost" disabled>提交成绩</button>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ 3. 结果页 ============================ -->
+  <section id="resultPage" class="page">
+    <div class="result-card">
+      <div class="result-summary">
+        <div>
+          <div class="summary-label">最终评分</div>
+          <div class="summary-score"><span id="sumScore">0</span><small>分</small></div>
+        </div>
+      </div>
+
+      <p id="sumMeta" class="summary-meta">用时 0.0 秒 · 速度 0 字/秒 · 准确率 0%</p>
+      <div id="abnormalTip" class="abnormal-tip" style="display:none">检测到切屏异常，本次成绩已标记</div>
+
+      <div class="canvas-wrap">
+        <canvas id="resultCanvas"></canvas>
+      </div>
+
+      <div class="result-actions">
+        <button id="btnDownload" class="btn btn-primary">下载结果图片</button>
+        <button id="btnAgain" class="btn btn-ghost">再测一次</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- 切屏暂停遮罩：返回页面后必须点击“继续测试”才能恢复计时 -->
+<div id="pauseMask" class="mask">
+  <div class="mask-card">
+    <div class="mask-icon">!</div>
+    <h3>检测到切换窗口，测试已暂停</h3>
+    <p>当前切屏次数：<span id="switchCountText">1</span> / 2<br />超过 2 次将自动提交成绩并标记异常</p>
+    <button id="btnResume" class="btn btn-primary">继续测试</button>
+  </div>
+</div>
+
+<!-- 可独立测试的核心逻辑：姓名校验、字符统计、评分算法 -->
+<script id="core-logic">
+(function () {
+  'use strict';
+  function toCharacters(value) {
+    return Array.from(String(value || '')).filter(function (char) { return !/\s/.test(char); });
+  }
+  function validateName(rawName) {
+    var value = String(rawName || '').trim();
+    var length = Array.from(value).length;
+    if (!value) return { ok: false, value: '', message: '请输入姓名' };
+    if (length < 2 || length > 10) return { ok: false, value: value, message: '姓名需为 2-10 个字符' };
+    return { ok: true, value: value, message: '' };
+  }
+  function getCharacterStats(targetValue, typedValue) {
+    var target = toCharacters(targetValue);
+    var typed = toCharacters(typedValue);
+    var comparable = Math.min(target.length, typed.length);
+    var correct = 0;
+    for (var index = 0; index < comparable; index += 1) {
+      if (target[index] === typed[index]) correct += 1;
+    }
+    // 多打、错打、漏打均计错；以较长一侧为分母，避免多打后仍显示 100%。
+    var denominator = Math.max(target.length, typed.length, 1);
+    var errors = denominator - correct;
+    var accuracy = correct / denominator * 100;
+    return { typed: typed.length, correct: correct, errors: errors, total: target.length,
+      accuracy: accuracy, errorRate: 100 - accuracy };
+  }
+  function calculateScore(options) {
+    var seconds = Math.max(.1, Number(options.seconds) || .1);
+    var stats = getCharacterStats(options.target, options.typed);
+    // 速度采用正确字符数，防止通过无效输入虚增速度。
+    var speedPerSec = stats.correct / seconds;
+    var speedScore = Math.max(0, Math.min(60, 60 - Math.max(0, seconds - 30) * 2));
+    var accuracyScore = Math.max(0, Math.min(40, 40 - stats.errors));
+    var score = Math.max(0, Math.min(100, Math.round(speedScore + accuracyScore)));
+    return Object.assign({}, stats, { seconds: seconds, speedPerSec: speedPerSec,
+      speedPerMin: Math.round(speedPerSec * 60), speedScore: speedScore,
+      accuracyScore: accuracyScore, score: score });
+  }
+  window.TypingTestCore = Object.freeze({ toCharacters: toCharacters, validateName: validateName,
+    getCharacterStats: getCharacterStats, calculateScore: calculateScore });
+}());
+</script>
+
+<script>
+/* =====================================================================
+   勤工俭学打字测试 —— 纯前端单文件实现
+   模块划分：
+     1) 常量与状态
+     2) 页面切换 / 提示
+     3) 登录校验
+     4) 计时器（含暂停/恢复）
+     5) 实时统计与提交
+     6) 评分算法与结果
+     7) Canvas 结果图片
+     8) 防作弊系统（全局复制粘贴 / 切屏 / 开发者工具 / 窗口变化）
+   ===================================================================== */
+
+/* ------------------------- 1. 常量与状态 ------------------------- */
+const TARGET_TEXT = '今天阳光很好，我来到学校参加打字测试。请认真输入每个字，保持耐心，顺利完成任务。';
+const STORAGE_KEY = 'qgjx_typing_records_v1';   // localStorage 记录键
+const FONT_STACK = '"Microsoft YaHei","PingFang SC","Hiragino Sans GB",Arial,sans-serif';
+const Core = window.TypingTestCore;
+
+const $ = (sel) => document.querySelector(sel);
+
+const state = {
+  name: '',
+  isTesting: false,      // 是否处于测试流程中（开始后、提交前）
+  isPaused: false,       // 是否暂停计时
+  finished: false,       // 是否已提交
+  elapsed: 0,            // 已累计的毫秒数
+  segStart: 0,           // 本段计时起点（performance.now）
+  timerId: null,
+  switchCount: 0,        // 切屏次数
+  pendingAutoSubmit: false, // 超限切屏后待自动提交
+  abnormal: false
+};
+
+let lastResult = null;   // 最近一次计算出的成绩
+
+/* ------------------------- 2. 页面切换 / 提示 ------------------------- */
+function showPage(key) {
+  const map = { login: '#loginPage', test: '#testPage', result: '#resultPage' };
+  Object.keys(map).forEach((k) => $(map[k]).classList.toggle('active', k === key));
+  window.scrollTo(0, 0);
+}
+
+let toastTimer = null;
+function showToast(msg, type, duration) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + (type || 'warn');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = 'toast'; }, duration || 2000);
+}
+
+function updateSwitchInfo() {
+  $('#switchCount').textContent = state.switchCount;
+  $('#switchCountText').textContent = state.switchCount;
+  $('#inlineSwitchCount').textContent = state.switchCount;
+}
+
+/* ------------------------- 3. 登录校验 ------------------------- */
+function handleEnter() {
+  const validation = Core.validateName($('#nameInput').value);
+  const err = $('#errorMsg');
+  if (!validation.ok) { err.textContent = validation.message; return; }
+
+  err.textContent = '';
+  state.name = validation.value;
+  enterTestPage();
+}
+
+/* 进入测试页：重置所有状态与控件，生成水印 */
+function enterTestPage() {
+  resetSession();
+
+  $('#examineeName').textContent = state.name;
+  $('#targetText').textContent = TARGET_TEXT;
+  $('#targetLength').textContent = '共 ' + Core.toCharacters(TARGET_TEXT).length + ' 字';
+  $('#inputArea').value = '';
+  $('#inputArea').disabled = true;
+  $('#inputArea').placeholder = '点击“开始测试”后在此输入……';
+  $('#btnStart').disabled = false;
+  $('#btnSubmit').disabled = true;
+  $('#timer').textContent = '0.0';
+  $('#typedCount').textContent = '0';
+  $('#correctCount').textContent = '0';
+  $('#liveAccuracy').textContent = '0.0';
+  $('#progressBar').style.width = '0%';
+  $('#statusText').textContent = '等待开始';
+  $('#statusDot').classList.remove('running');
+  updateSwitchInfo();
+
+  showPage('test');
+}
+
+/* 重置一次测试的会话状态 */
+function resetSession() {
+  if (state.timerId) clearInterval(state.timerId);
+  state.isTesting = false;
+  state.isPaused = false;
+  state.finished = false;
+  state.elapsed = 0;
+  state.segStart = 0;
+  state.timerId = null;
+  state.switchCount = 0;
+  state.pendingAutoSubmit = false;
+  state.abnormal = false;
+  $('#pauseMask').classList.remove('active');
+}
+
+/* ------------------------- 4. 计时器 ------------------------- */
+function currentElapsed() {
+  if (state.isTesting && !state.isPaused) {
+    return state.elapsed + (performance.now() - state.segStart);
+  }
+  return state.elapsed;
+}
+
+function tick() {
+  if (!state.isTesting || state.isPaused) return;
+  $('#timer').textContent = (currentElapsed() / 1000).toFixed(1);
+}
+
+function startTest() {
+  if (state.isTesting || state.finished) return;
+
+  state.isTesting = true;
+  state.isPaused = false;
+  state.elapsed = 0;
+  state.segStart = performance.now();
+  if (state.timerId) clearInterval(state.timerId);
+  state.timerId = setInterval(tick, 50);
+
+  const input = $('#inputArea');
+  input.disabled = false;
+  input.placeholder = '请在此输入上方文字……';
+  input.focus();
+
+  $('#btnStart').disabled = true;     // 开始后禁用开始
+  $('#btnSubmit').disabled = false;   // 开始后才可提交
+  $('#statusText').textContent = '测试进行中';
+  $('#statusDot').classList.add('running');
+  showToast('测试开始，请开始输入', 'info');
+  tick();
+}
+
+/* 暂停：切屏 / 遮罩时调用，累加已用时间并锁定输入 */
+function pauseTest() {
+  if (!state.isTesting || state.isPaused) return;
+  state.elapsed += performance.now() - state.segStart;
+  state.isPaused = true;
+  $('#inputArea').disabled = true;
+  $('#statusText').textContent = '已暂停';
+  $('#statusDot').classList.remove('running');
+}
+
+/* 恢复：必须由考生点击“继续测试”触发 */
+function resumeTest() {
+  if (!state.isTesting || !state.isPaused) return;
+  state.isPaused = false;
+  state.segStart = performance.now();
+  $('#pauseMask').classList.remove('active');
+  const input = $('#inputArea');
+  input.disabled = false;
+  input.focus();
+  $('#statusText').textContent = '测试进行中';
+  $('#statusDot').classList.add('running');
+  showToast('已恢复计时', 'info', 1200);
+}
+
+/* ------------------------- 5. 实时统计与提交 ------------------------- */
+/* 去掉空白字符（空格、换行、全角空格等不参与计数） */
+function normalize(str) {
+  return Core.toCharacters(str).join('');
+}
+
+/* 计算已打字数 / 正确字数 */
+function calcStats(typed) {
+  return Core.getCharacterStats(TARGET_TEXT, typed);
+}
+
+function handleInput() {
+  const stats = calcStats($('#inputArea').value);
+  $('#typedCount').textContent = stats.typed;
+  $('#correctCount').textContent = stats.correct;
+  $('#liveAccuracy').textContent = stats.typed ? stats.accuracy.toFixed(1) : '0.0';
+  $('#progressBar').style.width = Math.min(100, stats.typed / stats.total * 100).toFixed(1) + '%';
+}
+
+/* 提交成绩；abnormal=true 表示由系统强制提交（切屏超限） */
+function submitTest(opts) {
+  const abnormal = !!(opts && opts.abnormal);
+  if (!state.isTesting || state.finished) return;
+
+  const typed = $('#inputArea').value;
+  if (!abnormal) {
+    if (normalize(typed).length === 0) { showToast('请先输入内容再提交'); return; }
+    if (currentElapsed() < 1000) { showToast('测试时间过短，请继续输入'); return; }
+  }
+
+  // 结束计时
+  if (!state.isPaused) state.elapsed += performance.now() - state.segStart;
+  state.isPaused = true;
+  state.finished = true;
+  state.isTesting = false;
+  $('#statusText').textContent = abnormal ? '异常提交' : '已完成';
+  $('#statusDot').classList.remove('running');
+  if (state.timerId) { clearInterval(state.timerId); state.timerId = null; }
+
+  const seconds = Math.max(0.1, state.elapsed / 1000);
+  const res = computeResult(typed, seconds, abnormal || state.switchCount > 2);
+  lastResult = res;
+
+  $('#pauseMask').classList.remove('active');
+  $('#inputArea').disabled = true;
+
+  saveRecord(res);
+  renderResultPage(res);
+  showPage('result');
+}
+
+/* ------------------------- 6. 评分算法 ------------------------- */
+/*
+  基础分 100 = 速度分(60) + 准确率分(40)
+  · 速度分：基准 30 秒满分，每慢 1 秒扣 2 分，扣完为止
+  · 准确率分：满分 40 分，每错 1 字扣 1 分
+  · 结果只展示最终分数，不作及格或等级判断
+*/
+function computeResult(typed, seconds, abnormal) {
+  const calculated = Core.calculateScore({ target: TARGET_TEXT, typed, seconds });
+
+  return {
+    name: state.name,
+    seconds: seconds.toFixed(1),
+    speedPerSec: calculated.speedPerSec.toFixed(1),
+    speedPerMin: calculated.speedPerMin,
+    accuracy: calculated.accuracy.toFixed(1),
+    errorRate: calculated.errorRate.toFixed(1),
+    errors: calculated.errors,
+    correct: calculated.correct,
+    typed: calculated.typed,
+    total: calculated.total,
+    score: calculated.score,
+    abnormal: !!abnormal
+  };
+}
+
+/* 保存到 localStorage（仅最近 50 条，失败不影响使用） */
+function saveRecord(res) {
+  try {
+    const list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    list.unshift({
+      name: res.name,
+      seconds: res.seconds,
+      speedPerMin: res.speedPerMin,
+      accuracy: res.accuracy,
+      score: res.score,
+      abnormal: res.abnormal,
+      at: new Date().toISOString()
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list.slice(0, 50)));
+  } catch (e) {
+    /* 隐私模式或存储已满时忽略 */
+  }
+}
+
+/* 结果页渲染（文字 + Canvas 图片） */
+function renderResultPage(res) {
+  $('#sumScore').textContent = res.score;
+
+  $('#sumMeta').textContent =
+    '用时 ' + res.seconds + ' 秒 · 速度 ' + res.speedPerSec + ' 字/秒 · 准确率 ' + res.accuracy + '%';
+  $('#abnormalTip').style.display = res.abnormal ? 'block' : 'none';
+
+  drawResultImage(res);
+}
+
+/* ------------------------- 7. Canvas 结果图片 ------------------------- */
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
+}
+
+function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
+function formatDate(d) {
+  return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) +
+    ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds());
+}
+
+function formatStamp(d) {
+  return '' + d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) +
+    '_' + pad2(d.getHours()) + pad2(d.getMinutes());
+}
+
+/* 用 Canvas 绘制结果卡片（2 倍分辨率保证清晰） */
+function drawResultImage(res) {
+  const canvas = $('#resultCanvas');
+  const W = 900, H = 1200, S = 2;
+  canvas.width = W * S;
+  canvas.height = H * S;
+
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(S, 0, 0, S, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+
+  /* 背景渐变 */
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#e5f4ef');
+  bg.addColorStop(0.55, '#f4f8f6');
+  bg.addColorStop(1, '#e9eef4');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  /* 背景装饰圆 */
+  ctx.globalAlpha = 0.55;
+  ctx.fillStyle = '#cfe9e1';
+  ctx.beginPath(); ctx.arc(70, 80, 130, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#d5f1e5';
+  ctx.beginPath(); ctx.arc(W - 50, H - 70, 160, 0, Math.PI * 2); ctx.fill();
+  ctx.globalAlpha = 1;
+
+  /* 白色卡片 */
+  ctx.save();
+  ctx.shadowColor = 'rgba(26, 79, 138, .16)';
+  ctx.shadowBlur = 40;
+  ctx.shadowOffsetY = 16;
+  ctx.fillStyle = '#ffffff';
+  roundRect(ctx, 60, 70, W - 120, H - 160, 30);
+  ctx.fill();
+  ctx.restore();
+
+  /* 顶部渐变标题条（裁剪在卡片圆角内） */
+  ctx.save();
+  roundRect(ctx, 60, 70, W - 120, H - 160, 30);
+  ctx.clip();
+  const head = ctx.createLinearGradient(60, 70, W - 60, 230);
+  head.addColorStop(0, '#073f3a');
+  head.addColorStop(1, '#149780');
+  ctx.fillStyle = head;
+  ctx.fillRect(60, 70, W - 120, 152);
+  // 标题条上的装饰圆
+  ctx.globalAlpha = 0.16;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath(); ctx.arc(W - 120, 80, 90, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(120, 230, 70, 0, Math.PI * 2); ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.restore();
+
+  /* 标题 */
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 44px ' + FONT_STACK;
+  ctx.fillText('打字测试结果', W / 2, 146);
+
+  /* 考生姓名 */
+  ctx.fillStyle = '#8b98aa';
+  ctx.font = '20px ' + FONT_STACK;
+  ctx.fillText('考 生 姓 名', W / 2, 264);
+
+  ctx.fillStyle = '#1f2937';
+  ctx.font = 'bold 40px ' + FONT_STACK;
+  ctx.fillText(res.name, W / 2, 310);
+
+  /* 分隔线 */
+  ctx.strokeStyle = '#eef2f8';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(140, 348);
+  ctx.lineTo(W - 140, 348);
+  ctx.stroke();
+
+  /* 五项统计 */
+  const rows = [
+    ['测试时间', res.seconds + ' 秒'],
+    ['打字速度', res.speedPerSec + ' 字/秒（约 ' + res.speedPerMin + ' 字/分）'],
+    ['准确率', res.accuracy + '%'],
+    ['错误率', res.errorRate + '%'],
+    ['错误字数', res.errors + ' 字']
+  ];
+  ctx.textBaseline = 'middle';
+  rows.forEach(function (row, i) {
+    const cy = 400 + i * 70;
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#7b8798';
+    ctx.font = '24px ' + FONT_STACK;
+    ctx.fillText(row[0], 140, cy);
+
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#23303f';
+    ctx.font = 'bold 26px ' + FONT_STACK;
+    ctx.fillText(row[1], W - 140, cy);
+
+    ctx.strokeStyle = '#f1f5fa';
+    ctx.beginPath();
+    ctx.moveTo(140, cy + 34);
+    ctx.lineTo(W - 140, cy + 34);
+    ctx.stroke();
+  });
+
+  /* 最终评分区块 */
+  ctx.fillStyle = '#eef8f5';
+  ctx.strokeStyle = '#d7ebe5';
+  ctx.lineWidth = 2;
+  roundRect(ctx, 130, 745, W - 260, 210, 24);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#7b8798';
+  ctx.font = '22px ' + FONT_STACK;
+  ctx.fillText('最 终 评 分', W / 2, 786);
+
+  const scoreText = String(res.score);
+  ctx.font = 'bold 76px ' + FONT_STACK;
+  const scoreWidth = ctx.measureText(scoreText).width;
+  const startX = W / 2 - (scoreWidth + 34) / 2;
+
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#075f55';
+  ctx.fillText(scoreText, startX, 858);
+  ctx.font = 'bold 28px ' + FONT_STACK;
+  ctx.fillText('分', startX + scoreWidth + 6, 872);
+
+  /* 异常标记 */
+  if (res.abnormal) {
+    ctx.fillStyle = '#dc2626';
+    ctx.font = 'bold 20px ' + FONT_STACK;
+    ctx.fillText('注意：检测到切屏异常，本次成绩已标记', W / 2, 1000);
+  }
+
+  /* 底部水印：日期时间 + 测试名称 */
+  ctx.fillStyle = '#9aa8b9';
+  ctx.font = '18px ' + FONT_STACK;
+  ctx.fillText(formatDate(new Date()) + ' · 勤工俭学选拔测试', W / 2, 1055);
+}
+
+/* 下载结果为 PNG */
+function downloadResult() {
+  if (!lastResult) return;
+  const canvas = $('#resultCanvas');
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = '打字测试结果_' + lastResult.name + '_' + formatStamp(new Date()) + '.png';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  showToast('结果图片已保存', 'info');
+}
+
+/* 再测一次：回到登录页并保留姓名 */
+function backToLogin() {
+  resetSession();
+  $('#nameInput').value = state.name;
+  $('#errorMsg').textContent = '';
+  $('#pauseMask').classList.remove('active');
+  showPage('login');
+}
+
+/* =====================================================================
+   8. 全站防作弊系统
+   ===================================================================== */
+
+/* ---- 8.1 禁止复制 / 粘贴 / 剪切（全局，捕获阶段拦截） ---- */
+['copy', 'cut', 'paste', 'dragstart'].forEach(function (evt) {
+  document.addEventListener(evt, function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    showToast('禁止复制粘贴', 'warn');
+  }, true);
+});
+
+/* ---- 8.2 禁止右键菜单 ---- */
+document.addEventListener('contextmenu', function (e) {
+  e.preventDefault();
+  showToast('禁止复制粘贴', 'warn');
+  return false;
+}, true);
+
+/* ---- 8.3 快捷键拦截：Ctrl/Cmd + C/V/X/A 以及开发者工具快捷键 ---- */
+document.addEventListener('keydown', function (e) {
+  const key = (e.key || '').toLowerCase();
+  const mod = e.ctrlKey || e.metaKey;
+
+  // 复制、粘贴、剪切、全选
+  if (mod && !e.shiftKey && ['c', 'v', 'x', 'a'].indexOf(key) !== -1) {
+    e.preventDefault();
+    e.stopPropagation();
+    showToast('禁止复制粘贴', 'warn');
+    return false;
+  }
+
+  // 开发者工具：F12 / Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C / Ctrl+U（查看源码）
+  const isDevTools =
+    e.key === 'F12' ||
+    (mod && e.shiftKey && ['i', 'j', 'c'].indexOf(key) !== -1) ||
+    (mod && key === 'u');
+
+  if (isDevTools) {
+    e.preventDefault();
+    e.stopPropagation();
+    warnDevTools();
+    return false;
+  }
+}, true);
+
+/* 开发者工具警告：顶部红色横幅 + toast */
+let devBannerTimer = null;
+function warnDevTools() {
+  showToast('请关闭开发者工具', 'danger', 2600);
+  const banner = $('#devBanner');
+  banner.classList.add('show');
+  clearTimeout(devBannerTimer);
+  devBannerTimer = setTimeout(function () { banner.classList.remove('show'); }, 3000);
+}
+
+/* ---- 8.4 切屏 / 切换窗口检测（visibilitychange） ---- */
+document.addEventListener('visibilitychange', function () {
+  // 只有测试已开始且未提交时才检测
+  if (!state.isTesting || state.finished) return;
+
+  if (document.hidden) {
+    /* ---- 切屏：暂停计时并计数 ---- */
+    state.switchCount++;
+    updateSwitchInfo();
+    pauseTest();
+
+    if (state.switchCount > 2) {
+      // 超过 2 次：标记异常，返回页面后自动提交当前成绩
+      state.abnormal = true;
+      state.pendingAutoSubmit = true;
+    }
+  } else {
+    /* ---- 回到页面 ---- */
+    if (state.pendingAutoSubmit) {
+      submitTest({ abnormal: true });   // 自动提交并标记“异常”
+      return;
+    }
+    // 未超限：显示警告遮罩，必须点击“继续测试”才能恢复
+    $('#pauseMask').classList.add('active');
+    showToast('检测到切换窗口，测试已暂停', 'danger', 2600);
+  }
+});
+
+/* ---- 8.5 窗口大小异常变化提示（可选） ---- */
+let lastW = window.innerWidth, lastH = window.innerHeight;
+window.addEventListener('resize', function () {
+  const dw = Math.abs(window.innerWidth - lastW);
+  const dh = Math.abs(window.innerHeight - lastH);
+  lastW = window.innerWidth;
+  lastH = window.innerHeight;
+
+  if (state.isTesting && !state.isPaused && (dw > 240 || dh > 240)) {
+    showToast('检测到窗口大小异常变化', 'warn');
+  }
+});
+
+/* =====================================================================
+   9. 事件绑定
+   ===================================================================== */
+$('#btnEnter').addEventListener('click', handleEnter);
+$('#nameInput').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') handleEnter();
+});
+$('#nameInput').addEventListener('input', function () { $('#errorMsg').textContent = ''; });
+
+$('#btnStart').addEventListener('click', startTest);
+$('#btnSubmit').addEventListener('click', function () { submitTest({}); });
+$('#inputArea').addEventListener('input', handleInput);
+$('#btnResume').addEventListener('click', resumeTest);
+
+$('#btnDownload').addEventListener('click', downloadResult);
+$('#btnAgain').addEventListener('click', backToLogin);
+</script>
+</body>
+</html>
