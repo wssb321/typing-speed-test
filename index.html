@@ -537,6 +537,7 @@
       <div class="head-left">
         <span class="badge">打字测试</span>
         <span class="examinee">考生：<b id="examineeName">—</b></span>
+        <span class="badge" id="attemptLabel" aria-live="polite">第 1 次测试</span>
       </div>
       <span class="switch-info"><span id="statusDot" class="status-dot"></span><span id="statusText">等待开始</span> · 切屏 <b id="switchCount">0</b>/2</span>
     </div>
@@ -765,6 +766,8 @@
 const TARGET_TEXT = '今天阳光很好，我来到学校参加打字测试。请认真输入每个字，保持耐心，顺利完成任务。';
 const STORAGE_KEY = 'qgjx_typing_records_v1';   // localStorage 记录键
 const HU_ATTEMPT_KEY = 'qgjx_huxiaofeng_attempted_v1'; // 胡晓锋首次提交完成标记
+const ATTEMPT_KEY_PREFIX = 'qgjx_completed_attempts_v1_';
+const ACTIVE_EXAMINEE_KEY = 'qgjx_active_examinee_v1';
 const FONT_STACK = '"Microsoft YaHei","PingFang SC","Hiragino Sans GB",Arial,sans-serif';
 const Core = window.TypingTestCore;
 
@@ -822,7 +825,10 @@ function handleEnter() {
 function enterTestPage() {
   resetSession();
 
+  state.attemptNumber = readCompletedAttempts(state.name) + 1;
+  try { localStorage.setItem(ACTIVE_EXAMINEE_KEY, state.name); } catch (e) {}
   $('#examineeName').textContent = state.name;
+  $('#attemptLabel').textContent = '第 ' + state.attemptNumber + ' 次测试';
   $('#targetText').textContent = TARGET_TEXT;
   $('#targetLength').textContent = '共 ' + Core.toCharacters(TARGET_TEXT).length + ' 字';
   $('#inputArea').value = '';
@@ -986,18 +992,38 @@ function computeResult(typed, seconds, abnormal) {
   } catch (error) {
     previousAttempts = 0;
   }
-  return Core.buildResult({
+  return Object.assign(Core.buildResult({
     name: state.name,
     target: TARGET_TEXT,
     typed: typed,
     seconds: seconds,
     previousAttempts: previousAttempts,
     abnormal: abnormal
-  });
+  }), { attemptNumber: state.attemptNumber });
+}
+
+/* 独立保存各考生累计次数，不受最近 50 条成绩的淘汰影响。 */
+function readCompletedAttempts(name) {
+  try {
+    const saved = Number(localStorage.getItem(ATTEMPT_KEY_PREFIX + name));
+    const raw = localStorage.getItem(STORAGE_KEY);
+    let records = [];
+    try { const parsed = JSON.parse(raw || '[]'); if (Array.isArray(parsed)) records = parsed; } catch (e) {}
+    const own = records.filter((record) => record && record.name === name);
+    const numbered = own.reduce((max, record) => Number.isSafeInteger(record.attemptNumber)
+      ? Math.max(max, record.attemptNumber) : max, 0);
+    const legacy = name === '胡晓锋' && localStorage.getItem(HU_ATTEMPT_KEY) === '1' ? 1 : 0;
+    return Math.max(Number.isSafeInteger(saved) && saved >= 0 ? saved : 0, own.length, numbered, legacy);
+  } catch (e) { return 0; }
 }
 
 /* 保存到 localStorage（仅最近 50 条，失败不影响使用） */
 function saveRecord(res) {
+  try {
+    const completed = Math.max(readCompletedAttempts(res.name), res.attemptNumber);
+    localStorage.setItem(ATTEMPT_KEY_PREFIX + res.name, String(completed));
+    localStorage.removeItem(ACTIVE_EXAMINEE_KEY);
+  } catch (e) {}
   if (res.name === '胡晓锋') {
     try {
       localStorage.setItem(HU_ATTEMPT_KEY, '1');
@@ -1009,6 +1035,7 @@ function saveRecord(res) {
     const list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     list.unshift({
       name: res.name,
+      attemptNumber: res.attemptNumber,
       seconds: res.seconds,
       speedPerMin: res.speedPerMin,
       accuracy: res.accuracy,
@@ -1027,7 +1054,7 @@ function renderResultPage(res) {
   $('#sumScore').textContent = res.score;
 
   $('#sumMeta').textContent =
-    '用时 ' + res.seconds + ' 秒 · 速度 ' + res.speedPerSec + ' 字/秒 · 准确率 ' + res.accuracy + '%';
+    '第 ' + res.attemptNumber + ' 次测试 · 用时 ' + res.seconds + ' 秒 · 速度 ' + res.speedPerSec + ' 字/秒 · 准确率 ' + res.accuracy + '%';
   $('#abnormalTip').style.display = res.abnormal ? 'block' : 'none';
 
   drawResultImage(res);
@@ -1124,7 +1151,7 @@ function drawResultImage(res) {
   /* 考生姓名 */
   ctx.fillStyle = '#8b98aa';
   ctx.font = '20px ' + FONT_STACK;
-  ctx.fillText('考 生 姓 名', W / 2, 264);
+  ctx.fillText('考 生 姓 名 · 第 ' + res.attemptNumber + ' 次测试', W / 2, 264);
 
   ctx.fillStyle = '#1f2937';
   ctx.font = 'bold 40px ' + FONT_STACK;
@@ -1210,7 +1237,7 @@ function downloadResult() {
   const canvas = $('#resultCanvas');
   const a = document.createElement('a');
   a.href = canvas.toDataURL('image/png');
-  a.download = '打字测试结果_' + lastResult.name + '_' + formatStamp(new Date()) + '.png';
+  a.download = '打字测试结果_' + lastResult.name + '_第' + lastResult.attemptNumber + '次测试_' + formatStamp(new Date()) + '.png';
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -1220,6 +1247,7 @@ function downloadResult() {
 /* 再测一次：回到登录页并保留姓名 */
 function backToLogin() {
   resetSession();
+  try { localStorage.removeItem(ACTIVE_EXAMINEE_KEY); } catch (e) {}
   $('#nameInput').value = state.name;
   $('#errorMsg').textContent = '';
   $('#pauseMask').classList.remove('active');
@@ -1340,6 +1368,13 @@ $('#btnResume').addEventListener('click', resumeTest);
 
 $('#btnDownload').addEventListener('click', downloadResult);
 $('#btnAgain').addEventListener('click', backToLogin);
+
+// 刷新未提交的测试时恢复考生和本次编号，录入与计时重新开始。
+try {
+  const activeName = localStorage.getItem(ACTIVE_EXAMINEE_KEY);
+  const validation = Core.validateAllowedName(activeName);
+  if (validation.ok) { state.name = validation.value; enterTestPage(); }
+} catch (e) {}
 </script>
 </body>
 </html>
